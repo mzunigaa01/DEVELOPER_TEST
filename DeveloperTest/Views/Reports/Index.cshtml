@@ -1,0 +1,85 @@
+﻿@{
+    ViewBag.Title = "Reports";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    .custom-button {
+        width: 80px !important;
+    }
+</style>
+<br />
+<div id="page-head">
+    <div class="row">
+        <div class="col">
+            <ul class="breadcrumb">
+                <li>Developer Test</li>
+                <li><a href="@Url.Action("Index", "Reports")">Reports</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <div class="row">
+            <div class="col-sm-3">
+                <select class="form-control" id="regions">
+                    <option value="Regions">Regions</option>
+                </select>
+            </div>
+            <div class="col-sm-6">
+                <button class="btn btn-primary" id="btnReports" type="button">Reports</button>
+            </div>
+            <div class="col-sm-3">
+                <div class="btn-group">
+                    <a class="btn btn-default custom-button" id="btnXml" href="@Url.Action("ExportToXML", "Reports")">XML</a>
+                    <a class="btn btn-default custom-button" id="btnJson" href="@Url.Action("ExportToJson", "Reports")">JSON</a>
+                    <a class="btn btn-default custom-button" id="btnCsv" href="@Url.Action("ExportToCsv", "Reports")">CSV</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <br />
+    <div class="card-body">
+        <table id="datatable" class="table-bordered table-hover table-middle" style="width:100%">
+            <thead>
+                <tr>
+                    <th id="firstColumn">
+                        Region
+                    </th>
+                    <th>
+                        Cases
+                    </th>
+                    <th>
+                        Deaths
+                    </th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/Scripts/app/reports.js"></script>
+    <script>
+        $(document).ready(function () {
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("ListRegions")',
+                dataType: "json",
+                contentType: "application/json; charset=utf-8",
+                success: function (data) {
+                    $('#regions').empty();
+                    $('#regions').append('<option>Regions</option>');
+                    $.each(data.data, function (index, value) {
+                        $('#regions').append('<option value="' + value.region + '">' + value.region + '</option>');
+                    });
+                },
+                error: function () {
+                    alert("Error while inserting data");
+                }
+            });
+        });
+        appConfig.Reports.configureTable({ listUrl: "@Url.Action("ListReports")" });
+    </script>
+}
